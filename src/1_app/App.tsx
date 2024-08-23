@@ -12,11 +12,14 @@ const App: React.FC = () => {
       <Route path="/" element={<SignIn />} />
       <Route path="/get-started" element={<SignUpPage />} />
 
-      <Route element={<PersistLogin />}>
-        <Route element={<RequireAuth />}>
+      {/* <Route element={<PersistLogin />}>
+        <Route element={<RequireAuth />}> */}
           <Route path="home" element={<Home />} />
-        </Route>
-      </Route>
+          <Route path="entries" element={<Home />} />
+          <Route path="account" element={<Home />} />
+          <Route path="settings" element={<Home />} />
+        {/* </Route>
+      </Route> */}
     </Routes>
   );
 };
