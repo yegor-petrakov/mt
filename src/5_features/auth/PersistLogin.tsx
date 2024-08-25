@@ -53,7 +53,7 @@ const PersistLogin: React.FC = () => {
     );
   } else if (isError) {
     //persist: yes, token: no
-    content = <div className="p-3">Invalid Token</div>;
+    content = <div className="">Invalid Token</div>;
   } else if (isSuccess && trueSuccess) {
     //persist: yes, token: yes
     // console.log("token: ", token)

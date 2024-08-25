@@ -1,85 +1,63 @@
 import { apiSlice } from "../../../1_app/store/api/apiSlice";
 import { logOut, setCredentials } from "../authSlice";
 
+// Define types for credentials and response data
+interface Credentials {
+  username: string;
+  password: string;
+}
+
+interface AuthResponse {
+  accessToken: string;
+  // Add other fields as necessary
+}
+
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    signIn: builder.mutation({
+    signIn: builder.mutation<AuthResponse, Credentials>({
       query: (credentials) => ({
         url: "/auth/login",
         method: "POST",
         body: { ...credentials },
       }),
     }),
-    refresh: builder.mutation({
+    sendLogout: builder.mutation<void, void>({
+      query: () => ({
+        url: "/auth/logout",
+        method: "DELETE",
+      }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled; // Optional, depending on your API response
+          console.log(data);
+          dispatch(logOut());
+          setTimeout(() => {
+            dispatch(apiSlice.util.resetApiState());
+          }, 1000);
+        } catch (err) {
+          console.error("Logout failed:", err);
+        }
+      },
+    }),
+    refresh: builder.mutation<AuthResponse, void>({
       query: () => ({
         url: "/auth/refresh",
         method: "POST",
       }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
-          // console.log("----------------- onQueryStarted -----------------")
           const { data } = await queryFulfilled;
           console.log(data);
           const { accessToken } = data;
-          console.log(accessToken);
           dispatch(setCredentials({ accessToken }));
         } catch (err) {
-          // console.log(err)
+          console.error("Token refresh failed:", err);
         }
       },
     }),
   }),
 });
 
-export const { useSignInMutation, useRefreshMutation } = authApiSlice;
-
-// export const authApiSlice = apiSlice.injectEndpoints({
-//   endpoints: (builder) => ({
-//     login: builder.mutation({
-//       query: (credentials) => ({
-//         url: "/auth/login",
-//         method: "POST",
-//         body: { ...credentials },
-//       }),
-//     }),
-//     sendLogout: builder.mutation({
-//       query: () => ({
-//         url: "/auth/logout",
-//         method: "DELETE",
-//       }),
-//       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-//         try {
-//           const { data } = await queryFulfilled;
-//           // console.log(data)
-//           dispatch(logOut());
-//           setTimeout(() => {
-//             dispatch(apiSlice.util.resetApiState());
-//           }, 1000);
-//         } catch (err) {
-//           // console.log(err)
-//         }
-//       },
-//     }),
-//     refresh: builder.mutation({
-//       query: () => ({
-//         url: "/auth/refresh",
-//         method: "POST",
-//       }),
-//       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-//         try {
-//           // console.log("----------------- onQueryStarted -----------------")
-//           const { data } = await queryFulfilled;
-//           // console.log(data)
-//           const { accessToken } = data;
-//           // console.log(data)
-//           dispatch(setCredentials({ accessToken }));
-//         } catch (err) {
-//           // console.log(err)
-//         }
-//       },
-//     }),
-//   }),
-// });
-
-// export const { useLoginMutation, useSendLogoutMutation, useRefreshMutation } =
-//   authApiSlice;
+// Export hooks for usage in functional components
+export const { useSignInMutation, useSendLogoutMutation, useRefreshMutation } =
+  authApiSlice;

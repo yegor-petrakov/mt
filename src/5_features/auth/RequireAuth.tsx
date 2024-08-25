@@ -5,11 +5,11 @@ import useAuth from "../../7_shared/hooks/useAuth";
 const RequireAuth: React.FC = () => {
   const location = useLocation();
 
-  const { res } = useAuth();
+  const { accessToken } = useAuth();
 
-  console.log(res);
+  console.log(accessToken);
 
-  return res ? (
+  return accessToken ? (
     <Outlet />
   ) : (
     <Navigate to="/" state={{ from: location }} replace />

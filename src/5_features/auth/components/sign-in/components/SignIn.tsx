@@ -12,7 +12,7 @@ const SignIn: React.FC = () => {
   const onSubmit = async () => {
     try {
       const { data, error } = await signIn({
-        email: "egor.petrakov.xyz@gmail.com",
+        email: "egor@gmail.com",
         password: "string",
       });
 
